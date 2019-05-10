@@ -1,4 +1,4 @@
-module gin-sample
+module github.com/itslaves/rentalgames-server
 
 go 1.12
 
