@@ -1,10 +1,10 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
-)
 
+	"github.com/gin-gonic/gin"
+)
 
 func OAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
