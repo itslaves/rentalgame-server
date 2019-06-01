@@ -19,13 +19,12 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	cobra.OnInitialize(initConfig)
+
 	rootCmd.PersistentFlags().StringVarP(&env, "env", "E", "develop", "API server environment")
+	viper.BindPFlag("env", rootCmd.PersistentFlags().Lookup("env"))
 
-	// --- BEGIN COMMANDS --- //
 	rootCmd.AddCommand(debug.Command())
-	// --- END COMMANDS --- //
-
-	initConfig()
 }
 
 func initConfig() {
@@ -42,7 +41,6 @@ func initConfig() {
 	}
 }
 
-// Execute CLI 명령어 처리 수행
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

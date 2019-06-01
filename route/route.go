@@ -8,6 +8,7 @@ import (
 
 	"github.com/itslaves/rentalgames-server/article"
 	"github.com/itslaves/rentalgames-server/auth"
+	"github.com/spf13/viper"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -82,5 +83,5 @@ func Route() {
 		})
 	})
 
-	r.Run(":8080")
+	r.Run(fmt.Sprintf(":%d", viper.GetInt("port")))
 }
