@@ -1,0 +1,15 @@
+language: go
+go:
+  - "1.12"
+env:
+  - GO111MODULE=on
+before_install:
+  - go get -v golang.org/x/lint/golint
+script:
+  - go clean ./...
+  - gofmt -l .
+  - golint ./...
+  - go vet ./...
+  - go test -v ./...
+notifications:
+  slack: it-slaves:xRVaXMWqCiZPZLOFTiXe8YoY

@@ -3,17 +3,18 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"gin-sample/article"
-	"gin-sample/auth"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"net/http"
+	"github.com/itslaves/rentalgames-server/article"
+	"github.com/itslaves/rentalgames-server/auth"
 )
 
 const (
-	SessionKey = "sessionKey"
+	SessionKey    = "sessionKey"
 	SessionSecret = "sessionSecret"
 )
 
@@ -65,7 +66,7 @@ func main() {
 		user := auth.CurrentUser(c)
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Main website",
-			"name": user.Name,
+			"name":  user.Name,
 			"email": user.Email,
 		})
 	})

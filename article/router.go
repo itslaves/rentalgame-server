@@ -1,8 +1,9 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Retrieve(c *gin.Context) {
@@ -19,7 +20,7 @@ func Create(c *gin.Context) {
 	c.Bind(&paramArticle)
 	if newArticle, err := RegisterArticle(paramArticle); err == nil {
 		c.JSON(http.StatusCreated, gin.H{
-			"article" : newArticle,
+			"article": newArticle,
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, nil)
@@ -37,7 +38,7 @@ func Update(c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error" : err.Error(),
+			"error": err.Error(),
 		})
 	}
 }
