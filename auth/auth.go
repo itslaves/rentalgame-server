@@ -5,12 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"io/ioutil"
-	"net/http"
 )
 
 const (
@@ -19,24 +20,25 @@ const (
 	callbackUrl = "http://it-slaves.com:8080/auth/callback"
 	userInfoApi = "https://www.googleapis.com/oauth2/v3/userinfo"
 
-	scopeEmail = "https://www.googleapis.com/auth/userinfo.email"
+	scopeEmail   = "https://www.googleapis.com/auth/userinfo.email"
 	scopeProfile = "https://www.googleapis.com/auth/userinfo.profile"
 
-	userSessionKey = "userSessionKey"
+	userSessionKey  = "userSessionKey"
 	stateSessionKey = "stateSessionKey"
 )
 
 type Config struct {
 	oauth2.Config
 	ProviderName string
-	UserInfoApi string
+	UserInfoApi  string
 }
 
 var config []Config
+
 func init() {
-	config = []Config {
+	config = []Config{
 		{
-			oauth2.Config {
+			oauth2.Config{
 				ClientID:     "489302416615-1ila1jvd9vrhqam10r8p17iqmqp78b3m.apps.googleusercontent.com",
 				ClientSecret: "bb3wtKIkEsQ0aGLQqPDgc1xi",
 				RedirectURL:  callbackUrl,
@@ -71,8 +73,8 @@ func RandToken() string {
 }
 
 type User struct {
-	Uid	string `json:"sub"`
-	Name string `json:"name"`
+	Uid   string `json:"sub"`
+	Name  string `json:"name"`
 	Email string `json:"email"`
 }
 
@@ -96,8 +98,8 @@ func LoginView(c *gin.Context) {
 	// TODO 세션 유지기간 관련 설정 필요
 	state := RandToken()
 	session.Set(stateSessionKey, state)
-	c.HTML(http.StatusOK, "login.html", gin.H {
-		"loginUrl" : GetLoginUrl(state),
+	c.HTML(http.StatusOK, "login.html", gin.H{
+		"loginUrl": GetLoginUrl(state),
 	})
 }
 
@@ -126,7 +128,7 @@ func Authenticate(c *gin.Context) {
 	}
 	var user User
 	json.Unmarshal(userInfo, &user)
-	userJson, err  := json.Marshal(&user)
+	userJson, err := json.Marshal(&user)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

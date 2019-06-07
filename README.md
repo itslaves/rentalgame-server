@@ -1,5 +1,12 @@
 # rentalgames-server
 
+| Branch | Build Status |
+| ------ | ------------ |
+| master | [![Build Status](https://travis-ci.com/itslaves/rentalgames-server.svg?branch=master)](https://travis-ci.com/itslaves/rentalgames-server) |
+| develop | [![Build Status](https://travis-ci.com/itslaves/rentalgames-server.svg?branch=develop)](https://travis-ci.com/itslaves/rentalgames-server) |
+
+---
+
 ## Usages
 
 ### create
