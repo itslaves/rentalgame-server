@@ -102,7 +102,7 @@ func Route() {
 		redisClient := redis.Client()
 
 		c.JSON(200, gin.H{
-			"message": redisClient.Get(key).Result(),
+			"message": redisClient.Get(key).String(),
 		})
 	})
 
