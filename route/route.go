@@ -21,14 +21,9 @@ const (
 )
 
 func Route() {
-	r := gin.Default()
-
-	err := redis.Init()
-	if err != nil {
-		panic(err)
-	}
-
 	defer redis.Close()
+
+	r := gin.Default()
 
 	store := cookie.NewStore([]byte(SessionSecret))
 	r.Use(sessions.Sessions(SessionKey, store))

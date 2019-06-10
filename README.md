@@ -20,3 +20,4 @@
 ## Reference
 
 - <https://godoc.org/golang.org/x/oauth2#Config.TokenSource>
+- [Redis UniversalOptions](https://godoc.org/github.com/go-redis/redis#UniversalOptions)
