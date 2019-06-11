@@ -8,7 +8,6 @@ import (
 
 	"github.com/itslaves/rentalgames-server/article"
 	"github.com/itslaves/rentalgames-server/auth"
-	"github.com/spf13/viper"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -20,7 +19,7 @@ const (
 	SessionSecret = "sessionSecret"
 )
 
-func Route() {
+func Route() *gin.Engine {
 	r := gin.Default()
 
 	store := cookie.NewStore([]byte(SessionSecret))
@@ -83,5 +82,5 @@ func Route() {
 		})
 	})
 
-	r.Run(fmt.Sprintf(":%d", viper.GetInt("port")))
+	return r
 }
