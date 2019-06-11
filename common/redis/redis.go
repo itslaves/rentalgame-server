@@ -1,13 +1,18 @@
 package redis
 
 import (
+	"errors"
 	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 )
 
 var redisClient redis.UniversalClient
 
-func init() {
+func Init() error {
+	if redisClient != nil {
+		return errors.New("RedisClient has already been initialized.")
+	}
+
 	// https://godoc.org/github.com/go-redis/redis#UniversalOptions
 	options := redis.UniversalOptions{
 		Addrs: viper.GetStringSlice("redis.addrs"),
@@ -23,8 +28,10 @@ func init() {
 	redisClient = redis.NewUniversalClient(&options)
 
 	if _, err := redisClient.Ping().Result(); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func Close() error {
