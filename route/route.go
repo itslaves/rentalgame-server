@@ -3,12 +3,12 @@ package route
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/itslaves/rentalgames-server/article"
 	"github.com/itslaves/rentalgames-server/auth"
+	"github.com/itslaves/rentalgames-server/common/redis"
 	"github.com/spf13/viper"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -22,6 +22,13 @@ const (
 
 func Route() {
 	r := gin.Default()
+
+	err := redis.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	defer redis.Close()
 
 	store := cookie.NewStore([]byte(SessionSecret))
 	r.Use(sessions.Sessions(SessionKey, store))
@@ -76,6 +83,28 @@ func Route() {
 	r.GET("/articles", article.Retrieve)
 	r.POST("/articles", article.Create)
 	r.PUT("/articles/:id", article.Update)
+
+	r.POST("/redis", func(c *gin.Context) {
+		val := c.Query("val")
+		key := c.Query("key")
+
+		redisClient := redis.Client()
+		cmd := redisClient.Set(key, val, 0)
+
+		c.JSON(200, gin.H{
+			"message": cmd.String(),
+		})
+	})
+
+	r.GET("/redis", func(c *gin.Context) {
+		key := c.Query("key")
+
+		redisClient := redis.Client()
+
+		c.JSON(200, gin.H{
+			"message": redisClient.Get(key).String(),
+		})
+	})
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
