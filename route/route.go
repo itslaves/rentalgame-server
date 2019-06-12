@@ -3,10 +3,11 @@ package route
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/itslaves/rentalgames-server/article"
 	"github.com/itslaves/rentalgames-server/auth"
 	"github.com/itslaves/rentalgames-server/common/redis"
-	"github.com/spf13/viper"
+
 	"io/ioutil"
 	"net/http"
 
@@ -20,7 +21,7 @@ const (
 	SessionSecret = "sessionSecret"
 )
 
-func Route() {
+func Route() *gin.Engine {
 	r := gin.Default()
 
 	err := redis.Init()
@@ -112,5 +113,5 @@ func Route() {
 		})
 	})
 
-	r.Run(fmt.Sprintf(":%d", viper.GetInt("port")))
+	return r
 }

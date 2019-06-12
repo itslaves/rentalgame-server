@@ -1,6 +1,8 @@
 package debug
 
 import (
+	"fmt"
+
 	"github.com/itslaves/rentalgames-server/route"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -12,7 +14,8 @@ func Command() *cobra.Command {
 		Short: "Debug API server",
 		Long:  "Debug API server",
 		Run: func(cmd *cobra.Command, args []string) {
-			route.Route()
+			r := route.Route()
+			r.Run(fmt.Sprintf(":%d", viper.GetInt("port")))
 		},
 	}
 

@@ -19,26 +19,23 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("rg")
 
-	rootCmd.PersistentFlags().StringVarP(&env, "env", "E", "develop", "API server environment")
-	viper.BindPFlag("env", rootCmd.PersistentFlags().Lookup("env"))
-
-	rootCmd.AddCommand(debug.Command())
-}
-
-func initConfig() {
-	if env := rootCmd.Flag("env"); env != nil {
-		if v := env.Value.String(); v != "" {
-			viper.AddConfigPath(fmt.Sprintf("./config/%s", v))
-			viper.SetConfigName("application")
-		}
+	env := "develop"
+	if viper.IsSet("env") {
+		env = viper.GetString("env")
 	}
+
+	viper.AddConfigPath(fmt.Sprintf("./config/%s", env))
+	viper.SetConfigName("application")
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("Can not read the config file")
+		fmt.Println("Can't read the config file")
 		os.Exit(1)
 	}
+
+	rootCmd.AddCommand(debug.Command())
 }
 
 func Execute() {
