@@ -24,13 +24,6 @@ const (
 func Route() *gin.Engine {
 	r := gin.Default()
 
-	err := redis.Init()
-	if err != nil {
-		panic(err)
-	}
-
-	defer redis.Close()
-
 	store := cookie.NewStore([]byte(SessionSecret))
 	r.Use(sessions.Sessions(SessionKey, store))
 
