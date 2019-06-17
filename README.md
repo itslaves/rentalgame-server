@@ -7,20 +7,33 @@
 
 ---
 
-## Command lines
+## Project setup
 
-### Build
+### Compiles
 
 ```sh
-$ go build -o ./bin/rg-server
+go build -o ./bin/rg-server
+```
+
+### Tests
+
+```sh
+go test -v ./... # Run your unit tests
+gofmt -l . # Check your code formats
+golint ./... # Lints your codes
+go vet ./... # Run static analysis for your codes
 ```
 
 ### Run
 
 ```sh
-$ ./bin/rg-server --help
-$ RG_ENV=develop ./bin/rg-server debug -p 8080 # RG_ENV 로 구동 환경을 선택할 수 있음 (develop|test|staging|production)
+./bin/rg-server --help # Prints available commands
+./bin/rg-server {command} ({command_args})
+# ex) ./bin/rg-server debug -p 8080
 ```
+
+**(NOTE)**
+*RG_ENV* 환경변수를 통해서 서버 환경을 동적으로 선택할 수 있음. (develop|test|staging|production)
 
 ## Usages
 
