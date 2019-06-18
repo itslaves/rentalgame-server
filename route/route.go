@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/itslaves/rentalgames-server/oauth"
+	"github.com/spf13/viper"
+
 	"github.com/itslaves/rentalgames-server/article"
 	"github.com/itslaves/rentalgames-server/auth"
 	"github.com/itslaves/rentalgames-server/common/redis"
@@ -16,16 +19,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	SessionKey    = "sessionKey"
-	SessionSecret = "sessionSecret"
-)
-
 func Route() *gin.Engine {
 	r := gin.Default()
 
-	store := cookie.NewStore([]byte(SessionSecret))
-	r.Use(sessions.Sessions(SessionKey, store))
+	sessionKey := viper.GetString("session.key")
+	sessionSecret := viper.GetString("session.secret")
+
+	store := cookie.NewStore([]byte(sessionSecret))
+	r.Use(sessions.Sessions(sessionKey, store))
 
 	r.LoadHTMLGlob("templates/*")
 
@@ -105,6 +106,8 @@ func Route() *gin.Engine {
 			"message": "pong",
 		})
 	})
+
+	r.GET("/oauth/callback/naver", oauth.NaverOAuthCallback)
 
 	return r
 }
