@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
@@ -14,19 +15,19 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NaverOAuthCallback(c *gin.Context) {
+func KakaoOAuthCallback(c *gin.Context) {
 	session := sessions.Session(c)
 
 	webAddr := viper.GetString("web.addr")
 
 	oauthConfig := &oauth2.Config{
-		ClientID:     viper.GetString("oauth_naver_client_id"),
-		ClientSecret: viper.GetString("oauth_naver_client_secret"),
+		ClientID:     viper.GetString("oauth_kakao_client_id"),
+		ClientSecret: viper.GetString("oauth_kakao_client_secret"),
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  viper.GetString("oauth.naver.authorizeURL"),
-			TokenURL: viper.GetString("oauth.naver.tokenURL"),
+			AuthURL:  viper.GetString("oauth.kakao.authorizeURL"),
+			TokenURL: viper.GetString("oauth.kakao.tokenURL"),
 		},
-		RedirectURL: viper.GetString("oauth.naver.redirectURL"),
+		RedirectURL: viper.GetString("oauth.kakao.redirectURL"),
 	}
 
 	token, err := oauthConfig.Exchange(context.TODO(), c.Query("code"))
@@ -63,7 +64,7 @@ func NaverOAuthCallback(c *gin.Context) {
 	} else {
 		// 리소스 서버로부터 사용자 정보를 가져온 뒤 회원가입 페이지로 이동
 		client := oauthConfig.Client(context.TODO(), token)
-		resp, err := client.Get(viper.GetString("oauth.naver.userProfileURL"))
+		resp, err := client.Get(viper.GetString("oauth.kakao.userProfileURL"))
 		if err != nil {
 			// TODO: 에러 유형 파라미터로 전달
 			location := fmt.Sprintf("http://%s/error", webAddr)
@@ -72,19 +73,14 @@ func NaverOAuthCallback(c *gin.Context) {
 		defer resp.Body.Close()
 		result, _ := ioutil.ReadAll(resp.Body)
 
-		id, _ := jsonparser.GetString(result, "response", "id")
-		nickname, _ := jsonparser.GetString(result, "response", "nickname")
-		profileImage, _ := jsonparser.GetString(result, "response", "profile_image")
-		gender, _ := jsonparser.GetString(result, "response", "gender")
-		if gender == "M" {
-			gender = "male"
-		} else {
-			gender = "female"
-		}
-		email, _ := jsonparser.GetString(result, "response", "email")
+		id, _ := jsonparser.GetInt(result, "id")
+		nickname, _ := jsonparser.GetString(result, "properties", "nickname")
+		profileImage, _ := jsonparser.GetString(result, "properties", "profile_image")
+		gender, _ := jsonparser.GetString(result, "kakao_account", "gender")
+		email, _ := jsonparser.GetString(result, "kakao_account", "email")
 
 		params := url.Values{}
-		params.Set("id", id)
+		params.Set("id", strconv.Itoa(int(id)))
 		params.Set("nickname", nickname)
 		params.Set("profileImage", profileImage)
 		params.Set("gender", gender)

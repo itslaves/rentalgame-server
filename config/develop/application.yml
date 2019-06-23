@@ -1,8 +1,7 @@
 web:
-  url: http://localhost:8080
+  addr: localhost:8000
 session:
   type: redis
-  address: localhost:6379
   name: rg_session
   maxAge: 86400 # for a day
   domain: localhost

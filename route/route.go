@@ -27,15 +27,15 @@ func Route() *gin.Engine {
 
 	oauth := r.Group("oauth")
 	{
-		// oauth.POST("callback/kakao", auth.KakaoOAuthCallback)
-		oauth.POST("callback/naver", auth.NaverOAuthCallback)
-		// oauth.POST("callback/google", auth.GoogleOAuthCallback)
+		oauth.GET("callback/kakao", auth.KakaoOAuthCallback)
+		oauth.GET("callback/naver", auth.NaverOAuthCallback)
+		oauth.GET("callback/google", auth.GoogleOAuthCallback)
 	}
 
+	v1 := r.Group("v1")
+	v1.Use(auth.Authenticate())
 	// TODO: v1 API 라우트 추가
-	// v1 := r.Group("v1")
 	// {
-
 	// }
 
 	debug := r.Group("debug")
