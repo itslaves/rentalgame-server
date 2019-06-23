@@ -1,4 +1,4 @@
-package oauth
+package auth
 
 import (
 	"context"
@@ -9,48 +9,46 @@ import (
 	"net/url"
 
 	"github.com/buger/jsonparser"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/itslaves/rentalgames-server/common/sessions"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )
 
-const (
-	AuthorizeURL   = "https://nid.naver.com/oauth2.0/authorize"
-	TokenURL       = "https://nid.naver.com/oauth2.0/token"
-	UserProfileURL = "https://openapi.naver.com/v1/nid/me"
-)
-
 func NaverOAuthCallback(c *gin.Context) {
-	clientID := viper.GetString("oauth.naver.clientID")
-	clientSecret := viper.GetString("oauth.naver.clientSecret")
+	clientID := viper.GetString("oauth_naver_client_id")
+	clientSecret := viper.GetString("oauth_naver_client_secret")
+	authURL := viper.GetString("oauth.naver.authorizeURL")
+	tokenURL := viper.GetString("oauth.naver.tokenURL")
 	redirectURL := viper.GetString("oauth.naver.redirectURL")
 
 	oauthConfig := &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  AuthorizeURL,
-			TokenURL: TokenURL,
+			AuthURL:  authURL,
+			TokenURL: tokenURL,
 		},
 		RedirectURL: redirectURL,
 	}
 
 	token, err := oauthConfig.Exchange(context.TODO(), c.Query("code"))
 	if err != nil {
-		c.Redirect(http.StatusBadRequest, "/error")
+		// TODO: 에러 유형 파라미터로 전달
+		location := fmt.Sprintf("http://%s/error", WEB_SERVER_ADDR)
+		c.Redirect(http.StatusFound, location)
 	}
 	if !token.Valid() {
 		// TODO: 에러 유형 파라미터로 전달
-		c.Redirect(http.StatusBadRequest, "/error")
+		location := fmt.Sprintf("http://%s/error", WEB_SERVER_ADDR)
+		c.Redirect(http.StatusFound, location)
 	}
 
 	// TODO: MySQL DB 연동 처리
 	userID := "itslaves"
 	alreadyExists := true
 
-	sessionKey := viper.GetString("session.key")
-	session := sessions.Default(c)
+	session := sessions.Session(c)
 
 	if alreadyExists {
 		value := OAuthSessionValue{
@@ -59,15 +57,22 @@ func NaverOAuthCallback(c *gin.Context) {
 			RefreshToken: token.RefreshToken,
 		}
 		jsonBytes, _ := json.Marshal(&value)
-		session.Set(sessionKey, jsonBytes)
-		session.Save()
-		c.Redirect(http.StatusFound, "/")
+		session.Values[userID] = jsonBytes
+		if serr := session.Save(c.Request, c.Writer); err != nil {
+			fmt.Println(serr)
+		}
+
+		location := fmt.Sprintf("http://%s/", WEB_SERVER_ADDR)
+		c.Redirect(http.StatusFound, location)
 	} else {
+		userProfileURL := viper.GetString("oauth.naver.userProfileURL")
+
 		client := oauthConfig.Client(context.TODO(), token)
-		resp, err := client.Get(UserProfileURL)
+		resp, err := client.Get(userProfileURL)
 		if err != nil {
 			// TODO: 에러 유형 파라미터로 전달
-			c.Redirect(http.StatusBadRequest, "/error")
+			location := fmt.Sprintf("http://%s/error", WEB_SERVER_ADDR)
+			c.Redirect(http.StatusFound, location)
 		}
 		defer resp.Body.Close()
 		result, _ := ioutil.ReadAll(resp.Body)
@@ -89,8 +94,7 @@ func NaverOAuthCallback(c *gin.Context) {
 		params.Set("gender", gender)
 		params.Set("email", email)
 
-		urlPath := fmt.Sprintf("/join?%s", params.Encode())
-
-		c.Redirect(http.StatusFound, urlPath)
+		location := fmt.Sprintf("http://%s/join?%s", WEB_SERVER_ADDR, params.Encode())
+		c.Redirect(http.StatusFound, location)
 	}
 }
