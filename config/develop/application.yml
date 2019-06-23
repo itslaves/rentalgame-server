@@ -5,7 +5,7 @@ session:
   address: localhost:6379
   name: rg_session
   maxAge: 86400 # for a day
-  domain: it-slaves.com
+  domain: localhost
 oauth:
   kakao:
     authorizeURL: https://kauth.kakao.com/oauth/authorize
