@@ -1,3 +1,28 @@
+web:
+  url: http://localhost:8080
+session:
+  type: redis
+  address: localhost:6379
+  name: rg_session
+  maxAge: 86400 # for a day
+  domain: it-slaves.com
+oauth:
+  kakao:
+    authorizeURL: https://kauth.kakao.com/oauth/authorize
+    tokenURL: https://kauth.kakao.com/oauth/token
+    redirectURL: http://localhost:8080/oauth/callback/kakao
+    userProfileURL: https://kapi.kakao.com/v2/user/me
+  naver:
+    authorizeURL: https://nid.naver.com/oauth2.0/authorize
+    tokenURL: https://nid.naver.com/oauth2.0/token
+    redirectURL: http://localhost:8080/oauth/callback/naver
+    userProfileURL: https://openapi.naver.com/v1/nid/me
+  google:
+    redirectURL: http://localhost:8080/oauth/callback/google
+    scopes:
+      - https://www.googleapis.com/auth/userinfo.email
+      - https://www.googleapis.com/auth/userinfo.profile
+    userProfileURL: https://www.googleapis.com/oauth2/v3/userinfo
 redis:
   addrs: [":6379"]
   minIdleConns: 2
