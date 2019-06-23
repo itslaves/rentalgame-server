@@ -128,19 +128,16 @@ func (rs *RedisStore) save(s *sessions.Session) error {
 
 func (rs *RedisStore) load(s *sessions.Session) error {
 	r := rs.client.Get(rs.sessionKey(s))
-	if r.Err() == redis.Nil {
-		return nil
-	} else if r.Err() != nil {
+	if r.Err() != nil {
 		return r.Err()
-	} else {
-		if data, err := r.Bytes(); err == nil {
-			err = securecookie.DecodeMulti(s.Name(), string(data), &s.Values, rs.Codecs...)
-			if err != nil {
-				return err
-			}
-		} else {
+	}
+	if data, err := r.Bytes(); err == nil {
+		err = securecookie.DecodeMulti(s.Name(), string(data), &s.Values, rs.Codecs...)
+		if err != nil {
 			return err
 		}
+	} else {
+		return err
 	}
 	return nil
 }
