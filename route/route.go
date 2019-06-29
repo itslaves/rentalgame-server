@@ -25,20 +25,21 @@ func Route() *gin.Engine {
 		})
 	})
 
-	oauth := r.Group("oauth")
+	oauth := r.Group("/oauth")
 	{
-		oauth.GET("callback/kakao", auth.KakaoOAuthCallback)
-		oauth.GET("callback/naver", auth.NaverOAuthCallback)
-		oauth.GET("callback/google", auth.GoogleOAuthCallback)
+		oauth.GET("/vendors", auth.OAuthAuthUrls)
+		oauth.GET("/callback/kakao", auth.KakaoOAuthCallback)
+		oauth.GET("/callback/naver", auth.NaverOAuthCallback)
+		oauth.GET("/callback/google", auth.GoogleOAuthCallback)
 	}
 
-	v1 := r.Group("v1")
+	v1 := r.Group("/v1")
 	v1.Use(auth.Authenticate())
 	// TODO: v1 API 라우트 추가
 	// {
 	// }
 
-	debug := r.Group("debug")
+	debug := r.Group("/debug")
 	{
 		debug.POST("/redis", func(c *gin.Context) {
 			redisClient := redis.Client()

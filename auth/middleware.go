@@ -17,6 +17,19 @@ func Authenticate() gin.HandlerFunc {
 			location := fmt.Sprintf("http://%s/login", webAddr)
 			c.Redirect(http.StatusFound, location)
 		}
+		/*
+			else {
+				r, err = db.Select("sdadad wher uid = %s", uid)
+				if err != nil {
+					params : url.Values{}
+					params["email"] = session.Values["email"]
+
+					webAddr := viper.GetString("web.addr")
+					location := fmt.Sprintf("http://%s/join?%s", webAddr, params.Encode())
+					c.Redirect(http.StatusFound, location)
+				}
+			}
+		*/
 		c.Next()
 	}
 }
