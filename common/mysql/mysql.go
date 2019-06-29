@@ -1,4 +1,4 @@
-package redis
+package mysql
 
 import (
 	"errors"
@@ -47,7 +47,7 @@ func Init() error {
 	}
 	config := &mysql.Config{
 		User:         viper.GetString("mysql.user"),
-		Passwd:       viper.GetString("mysql.passwd"),
+		Passwd:       viper.GetString("mysql_passwd"),
 		Net:          "tcp",
 		Addr:         viper.GetString("mysql.addr"),
 		DBName:       viper.GetString("mysql.db"),

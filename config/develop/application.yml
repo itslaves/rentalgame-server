@@ -3,7 +3,6 @@ redis:
   minIdleConns: 2
 mysql:
   user: "root"
-  passwd: ""
   addr: "localhost:3306"
   db: "rental_games"
   params:
