@@ -1,3 +1,15 @@
 redis:
   addrs: [":6379"]
   minIdleConns: 2
+mysql:
+  user: "root"
+  passwd: ""
+  addr: "localhost:3306"
+  db: "rental_games"
+  params:
+    charset: "utf8mb4"
+  collation: "utf8mb4_general_ci"
+  location: "Asia/Seoul"
+  dialTimeout: "50ms"
+  readTimeout: "200ms"
+  writeTimeout: "400ms"
