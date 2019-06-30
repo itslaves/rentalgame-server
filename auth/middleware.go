@@ -6,19 +6,21 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
-	"github.com/itslaves/rentalgames-server/common/sessions"
+	rgMySQL "github.com/itslaves/rentalgames-server/common/mysql"
+	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
+	rgUser "github.com/itslaves/rentalgames-server/user"
 	"github.com/spf13/viper"
 )
 
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session := sessions.Session(c)
+		session := rgSessions.Session(c)
 		webAddr := viper.GetString("web.addr")
+
 		if userID, ok := session.Values[UserID]; ok {
-			// TODO: MySQL DB 연동 부분
-			var err error // FIXME: DB 연동 후 제거
-			// _, err := db.Select(fmt.Sprintf("SELECT userID FROM users WHERE userID = '%s'", userID))
-			if err != nil {
+			db := rgMySQL.Client()
+			condTemplate := fmt.Sprintf("oauth.%s = ?", session.Values[Vendor])
+			if err := db.Where(condTemplate, userID).First(&rgUser.User{}).Error; err != nil {
 				params := url.Values{}
 				params.Set(UserID, userID.(string))
 				params.Set(Nickname, session.Values[Nickname].(string))

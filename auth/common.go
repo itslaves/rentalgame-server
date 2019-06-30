@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	Vendor       = "vendor"
 	UserID       = "userID"
 	Nickname     = "nickname"
 	ProfileImage = "profileImage"
@@ -48,7 +49,8 @@ type UserAuth struct {
 type SessionValues struct {
 	UserProfile
 	UserAuth
-	State string `json:"state,omitempty"`
+	Vendor string `json:"vendor"`
+	State  string `json:"state,omitempty"`
 }
 
 func OAuthAuthUrls(ctx *gin.Context) {
@@ -160,6 +162,7 @@ func (h *callbackHandler) writeSession() error {
 	if h.token == nil {
 		return errors.New("token does not exist")
 	}
+	h.session.Values[Vendor] = h.vendor
 	h.session.Values[UserID] = h.userProfile.UserID
 	h.session.Values[Nickname] = h.userProfile.Nickname
 	h.session.Values[ProfileImage] = h.userProfile.ProfileImage
