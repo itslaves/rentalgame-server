@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
@@ -55,7 +56,9 @@ func OAuthAuthUrls(ctx *gin.Context) {
 	state := randomToken()
 
 	session.Values[State] = state
-	session.Save(ctx.Request, ctx.Writer)
+	if err := session.Save(ctx.Request, ctx.Writer); err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, err)
+	}
 
 	ctx.JSON(http.StatusOK, []map[string]interface{}{
 		gin.H{
@@ -165,21 +168,27 @@ func (h *callbackHandler) writeSession() error {
 	h.session.Values[AccessToken] = h.token.AccessToken
 	h.session.Values[RefreshToken] = h.token.RefreshToken
 	h.session.Values[Expiry] = h.token.Expiry
-	h.session.Save(h.ctx.Request, h.ctx.Writer)
+	if err := h.session.Save(h.ctx.Request, h.ctx.Writer); err != nil {
+		return err
+	}
 	return nil
 }
 
 func (h *callbackHandler) Handle() {
 	if err := h.validateState(); err != nil {
+		fmt.Fprint(os.Stderr, err)
 		h.ctx.Redirect(http.StatusPermanentRedirect, h.errPage())
 	}
 	if err := h.loadToken(); err != nil {
+		fmt.Fprint(os.Stderr, err)
 		h.ctx.Redirect(http.StatusPermanentRedirect, h.errPage())
 	}
 	if err := h.loadUserProfile(); err != nil {
+		fmt.Fprint(os.Stderr, err)
 		h.ctx.Redirect(http.StatusPermanentRedirect, h.errPage())
 	}
 	if err := h.writeSession(); err != nil {
+		fmt.Fprint(os.Stderr, err)
 		h.ctx.Redirect(http.StatusPermanentRedirect, h.errPage())
 	}
 	h.ctx.Redirect(http.StatusPermanentRedirect, h.okPage())
