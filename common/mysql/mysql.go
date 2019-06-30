@@ -57,6 +57,7 @@ func Init() error {
 		Timeout:      dialTimeout,
 		ReadTimeout:  readTimeout,
 		WriteTimeout: writeTimeout,
+		ParseTime:    true,
 	}
 
 	mysqlClient, err = gorm.Open("mysql", config.FormatDSN())
