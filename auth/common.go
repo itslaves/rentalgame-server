@@ -53,7 +53,7 @@ type SessionValues struct {
 	State  string `json:"state,omitempty"`
 }
 
-func OAuthAuthUrls(ctx *gin.Context) {
+func OAuthVendorUrls(ctx *gin.Context) {
 	session := rgSessions.Session(ctx)
 	state := randomToken()
 
