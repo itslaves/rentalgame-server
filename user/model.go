@@ -7,8 +7,8 @@ type User struct {
 	Gender       string  `gorm:"type:char(1);not null"`
 	ProfileImage *string `gorm:"column:profile_img;type:char(100)"`
 	Age          int     `gorm:"type:int(11);not null"`
-	OAuthVendor  string  `gorm:"type:varchar(20);not null"`
-	OAuthID      int     `gorm:"type:varchar(100);not null"`
+	OAuthVendor  string  `gorm:"column:oauth_vendor;type:varchar(20);not null"`
+	OAuthID      int     `gorm:"column:oauth_id;type:varchar(100);not null"`
 }
 
 func (User) TableName() string {
