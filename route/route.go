@@ -27,7 +27,7 @@ func Route() *gin.Engine {
 
 	oauth := r.Group("/oauth")
 	{
-		oauth.GET("/vendors", auth.OAuthAuthUrls)
+		oauth.GET("/vendors", auth.OAuthVendorUrls)
 		oauth.GET("/callback/kakao", auth.KakaoOAuthCallback)
 		oauth.GET("/callback/naver", auth.NaverOAuthCallback)
 		oauth.GET("/callback/google", auth.GoogleOAuthCallback)

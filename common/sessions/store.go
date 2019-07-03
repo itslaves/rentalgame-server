@@ -2,6 +2,7 @@ package sessions
 
 import (
 	"encoding/base32"
+	"encoding/gob"
 	"fmt"
 	"net/http"
 	"strings"
@@ -14,6 +15,11 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 )
+
+func init() {
+	// gob encoder가 time.Time 타입을 인식할 수 있도록 등록
+	gob.Register(time.Time{})
+}
 
 type RedisStore struct {
 	Codecs    []securecookie.Codec
@@ -131,8 +137,8 @@ func (rs *RedisStore) load(s *sessions.Session) error {
 	if r.Err() != nil {
 		return r.Err()
 	}
-	if data, err := r.Bytes(); err == nil {
-		err = securecookie.DecodeMulti(s.Name(), string(data), &s.Values, rs.Codecs...)
+	if data, err := r.Result(); err == nil {
+		err = securecookie.DecodeMulti(s.Name(), data, &s.Values, rs.Codecs...)
 		if err != nil {
 			return err
 		}

@@ -6,19 +6,22 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
-	"github.com/itslaves/rentalgames-server/common/sessions"
+	rgMySQL "github.com/itslaves/rentalgames-server/common/mysql"
+	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
+	rgUser "github.com/itslaves/rentalgames-server/user"
 	"github.com/spf13/viper"
 )
 
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session := sessions.Session(c)
+		session := rgSessions.Session(c)
 		webAddr := viper.GetString("web.addr")
+
 		if userID, ok := session.Values[UserID]; ok {
-			// TODO: MySQL DB 연동 부분
-			var err error // FIXME: DB 연동 후 제거
-			// _, err := db.Select(fmt.Sprintf("SELECT userID FROM users WHERE userID = '%s'", userID))
-			if err != nil {
+			vendor := session.Values[Vendor]
+			db := rgMySQL.Client()
+			condTemplate := "oauth_vendor = ? AND oauth_id = ?"
+			if err := db.Where(condTemplate, vendor, userID).First(&rgUser.User{}).Error; err != nil {
 				params := url.Values{}
 				params.Set(UserID, userID.(string))
 				params.Set(Nickname, session.Values[Nickname].(string))
@@ -27,11 +30,17 @@ func Authenticate() gin.HandlerFunc {
 				params.Set(Email, session.Values[Email].(string))
 
 				joinPage := fmt.Sprintf("http://%s/join?%s", webAddr, params.Encode())
-				c.Redirect(http.StatusTemporaryRedirect, joinPage)
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"redirect": joinPage,
+				})
+				c.Abort()
 			}
 		} else {
 			loginPage := fmt.Sprintf("http://%s/login", webAddr)
-			c.Redirect(http.StatusTemporaryRedirect, loginPage)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"redirect": loginPage,
+			})
+			c.Abort()
 		}
 		c.Next()
 	}
