@@ -4,6 +4,7 @@ import (
 	"github.com/itslaves/rentalgames-server/auth"
 	"github.com/spf13/viper"
 
+	"github.com/itslaves/rentalgames-server/common/cors"
 	"github.com/itslaves/rentalgames-server/common/redis"
 	"github.com/itslaves/rentalgames-server/common/sessions"
 
@@ -14,6 +15,7 @@ func Route() *gin.Engine {
 	r := gin.Default()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(cors.CORS())
 
 	sessionName := viper.GetString("session.name")
 	sessionStore := sessions.NewRedisStore()
