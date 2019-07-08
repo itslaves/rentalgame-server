@@ -1,9 +1,13 @@
 package route
 
 import (
-	"github.com/itslaves/rentalgames-server/auth"
+	"fmt"
+	"time"
+
+	"github.com/gin-contrib/cors"
 	"github.com/spf13/viper"
 
+	"github.com/itslaves/rentalgames-server/auth"
 	"github.com/itslaves/rentalgames-server/common/redis"
 	"github.com/itslaves/rentalgames-server/common/sessions"
 
@@ -14,6 +18,21 @@ func Route() *gin.Engine {
 	r := gin.Default()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	webAddr := viper.GetString("web.addr")
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{fmt.Sprintf("http://%s", webAddr)},
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{
+			"Content-Type",
+			"Content-Length",
+			"Accept-Encoding",
+			"X-CSRF-Token",
+			"Authorization",
+		},
+		AllowCredentials: true,
+		MaxAge:           24 * time.Hour,
+	}))
 
 	sessionName := viper.GetString("session.name")
 	sessionStore := sessions.NewRedisStore()
