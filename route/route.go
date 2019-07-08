@@ -2,6 +2,7 @@ package route
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -39,7 +40,7 @@ func Route() *gin.Engine {
 	r.Use(sessions.Register(sessionName, sessionStore))
 
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
@@ -55,8 +56,11 @@ func Route() *gin.Engine {
 	v1 := r.Group("/v1")
 	v1.Use(auth.Authenticate())
 	// TODO: v1 API 라우트 추가
-	// {
-	// }
+	{
+		v1.GET("/authentication", func(c *gin.Context) {
+			c.JSON(http.StatusOK, nil)
+		})
+	}
 
 	debug := r.Group("/debug")
 	{
@@ -65,14 +69,14 @@ func Route() *gin.Engine {
 			val := c.Query("val")
 			key := c.Query("key")
 			cmd := redisClient.Set(key, val, 0)
-			c.JSON(200, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"message": cmd.String(),
 			})
 		})
 		debug.GET("/redis", func(c *gin.Context) {
 			redisClient := redis.Client()
 			key := c.Query("key")
-			c.JSON(200, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"message": redisClient.Get(key).String(),
 			})
 		})

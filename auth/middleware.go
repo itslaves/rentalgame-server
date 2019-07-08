@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"fmt"
+	"github.com/itslaves/rentalgames-server/common/errors"
 	"net/http"
 	"net/url"
 
@@ -9,13 +9,11 @@ import (
 	rgMySQL "github.com/itslaves/rentalgames-server/common/mysql"
 	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 	rgUser "github.com/itslaves/rentalgames-server/user"
-	"github.com/spf13/viper"
 )
 
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := rgSessions.Session(c)
-		webAddr := viper.GetString("web.addr")
 
 		if userID, ok := session.Values[UserID]; ok {
 			vendor := session.Values[Vendor]
@@ -29,17 +27,11 @@ func Authenticate() gin.HandlerFunc {
 				params.Set(Gender, session.Values[Gender].(string))
 				params.Set(Email, session.Values[Email].(string))
 
-				joinPage := fmt.Sprintf("http://%s/join?%s", webAddr, params.Encode())
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"redirect": joinPage,
-				})
+				c.JSON(http.StatusUnauthorized, errors.ErrorResponse(errors.Unauthorized))
 				c.Abort()
 			}
 		} else {
-			loginPage := fmt.Sprintf("http://%s/login", webAddr)
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"redirect": loginPage,
-			})
+			c.JSON(http.StatusUnauthorized, errors.ErrorResponse(errors.LoginRequired))
 			c.Abort()
 		}
 		c.Next()
