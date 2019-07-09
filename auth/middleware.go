@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"github.com/itslaves/rentalgames-server/common/errors"
 	"net/http"
 	"net/url"
 
 	"github.com/gin-gonic/gin"
+	rgErrors "github.com/itslaves/rentalgames-server/common/errors"
 	rgMySQL "github.com/itslaves/rentalgames-server/common/mysql"
 	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 	rgUser "github.com/itslaves/rentalgames-server/user"
@@ -27,11 +27,11 @@ func Authenticate() gin.HandlerFunc {
 				params.Set(Gender, session.Values[Gender].(string))
 				params.Set(Email, session.Values[Email].(string))
 
-				c.JSON(http.StatusUnauthorized, errors.ErrorResponse(errors.Unauthorized))
+				c.JSON(http.StatusUnauthorized, rgErrors.ErrorResponse(rgErrors.JoinRequired))
 				c.Abort()
 			}
 		} else {
-			c.JSON(http.StatusUnauthorized, errors.ErrorResponse(errors.LoginRequired))
+			c.JSON(http.StatusUnauthorized, rgErrors.ErrorResponse(rgErrors.LoginRequired))
 			c.Abort()
 		}
 		c.Next()
