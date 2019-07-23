@@ -2,6 +2,8 @@ package redis
 
 import (
 	"errors"
+
+	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 )
@@ -15,8 +17,8 @@ func Init() error {
 
 	// https://godoc.org/github.com/go-redis/redis#UniversalOptions
 	options := redis.UniversalOptions{
-		Addrs: viper.GetStringSlice("redis.addrs"),
-		Password: viper.GetString("redis.password"),
+		Addrs:        viper.GetStringSlice("redis.addrs"),
+		Password:     viper.GetString("redis.password"),
 		MinIdleConns: viper.GetInt("redis.minIdleConns"),
 	}
 
@@ -40,4 +42,12 @@ func Close() error {
 
 func Client() redis.UniversalClient {
 	return redisClient
+}
+
+func TestClient() redis.UniversalClient {
+	mr, _ := miniredis.Run()
+	options := redis.UniversalOptions{
+		Addrs: []string{mr.Addr()},
+	}
+	return redis.NewUniversalClient(&options)
 }

@@ -8,9 +8,6 @@ import (
 	"strings"
 	"time"
 
-	rgRedis "github.com/itslaves/rentalgames-server/common/redis"
-	"github.com/spf13/viper"
-
 	"github.com/go-redis/redis"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -28,21 +25,12 @@ type RedisStore struct {
 	client    redis.UniversalClient
 }
 
-func NewRedisStore() *RedisStore {
-	hashKey := []byte(viper.GetString("session_hash_key"))
-	blockKey := []byte(viper.GetString("session_block_key"))
-	maxAge := viper.GetInt("session.maxAge")
-	domain := viper.GetString("session.domain")
-
+func NewRedisStore(client redis.UniversalClient, options *sessions.Options, keyPairs ...[]byte) *RedisStore {
 	rs := &RedisStore{
-		Codecs: securecookie.CodecsFromPairs(hashKey, blockKey),
-		Options: &sessions.Options{
-			Path:   "/",
-			MaxAge: maxAge,
-			Domain: domain,
-		},
+		Codecs:    securecookie.CodecsFromPairs(keyPairs...),
+		Options:   options,
 		keyPrefix: "session",
-		client:    rgRedis.Client(),
+		client:    client,
 	}
 	rs.MaxAge(rs.Options.MaxAge)
 	rs.SetSerializer(securecookie.GobEncoder{})

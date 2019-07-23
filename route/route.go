@@ -6,21 +6,25 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 
-	"github.com/itslaves/rentalgames-server/auth"
-	"github.com/itslaves/rentalgames-server/common/redis"
-	"github.com/itslaves/rentalgames-server/common/sessions"
-
-	"github.com/gin-gonic/gin"
+	rgAuth "github.com/itslaves/rentalgames-server/auth"
+	rgRedis "github.com/itslaves/rentalgames-server/common/redis"
+	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 )
 
 func Route() *gin.Engine {
-	r := gin.Default()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-
 	webAddr := viper.GetString("web.addr")
+	sessionName := viper.GetString("session.name")
+	sessionMaxAge := viper.GetInt("session.maxAge")
+	sessionDomain := viper.GetString("session.domain")
+	sessionHashKey := []byte(viper.GetString("session_hash_key"))
+	sessionBlockKey := []byte(viper.GetString("session_block_key"))
+
+	r := gin.Default()
+
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{fmt.Sprintf("http://%s", webAddr)},
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -35,9 +39,17 @@ func Route() *gin.Engine {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	sessionName := viper.GetString("session.name")
-	sessionStore := sessions.NewRedisStore()
-	r.Use(sessions.Register(sessionName, sessionStore))
+	sessionStore := rgSessions.NewRedisStore(
+		rgRedis.Client(),
+		&sessions.Options{
+			Path:   "/",
+			MaxAge: sessionMaxAge,
+			Domain: sessionDomain,
+		},
+		sessionHashKey,
+		sessionBlockKey,
+	)
+	r.Use(rgSessions.Register(sessionName, sessionStore))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -47,14 +59,14 @@ func Route() *gin.Engine {
 
 	oauth := r.Group("/oauth")
 	{
-		oauth.GET("/vendors", auth.OAuthVendorUrls)
-		oauth.GET("/callback/kakao", auth.KakaoOAuthCallback)
-		oauth.GET("/callback/naver", auth.NaverOAuthCallback)
-		oauth.GET("/callback/google", auth.GoogleOAuthCallback)
+		oauth.GET("/vendors", rgAuth.OAuthVendorUrls)
+		oauth.GET("/callback/kakao", rgAuth.KakaoOAuthCallback)
+		oauth.GET("/callback/naver", rgAuth.NaverOAuthCallback)
+		oauth.GET("/callback/google", rgAuth.GoogleOAuthCallback)
 	}
 
 	v1 := r.Group("/v1")
-	v1.Use(auth.Authenticate())
+	v1.Use(rgAuth.Authenticate())
 	// TODO: v1 API 라우트 추가
 	{
 		v1.GET("/authentication", func(c *gin.Context) {
@@ -65,7 +77,7 @@ func Route() *gin.Engine {
 	debug := r.Group("/debug")
 	{
 		debug.POST("/redis", func(c *gin.Context) {
-			redisClient := redis.Client()
+			redisClient := rgRedis.Client()
 			val := c.Query("val")
 			key := c.Query("key")
 			cmd := redisClient.Set(key, val, 0)
@@ -74,7 +86,7 @@ func Route() *gin.Engine {
 			})
 		})
 		debug.GET("/redis", func(c *gin.Context) {
-			redisClient := redis.Client()
+			redisClient := rgRedis.Client()
 			key := c.Query("key")
 			c.JSON(http.StatusOK, gin.H{
 				"message": redisClient.Get(key).String(),
