@@ -7,6 +7,8 @@ os:
   - "windows"
 env:
   - GO111MODULE=on
+before_script:
+  - git checkout -- .
 script:
   - go clean ./...
   - gofmt -l .
