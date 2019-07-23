@@ -18,10 +18,9 @@ go build -o ./bin/rg-server
 ### Tests
 
 ```sh
-go test -v ./... # Run your unit tests
 gofmt -l . # Check your code formats
-golint ./... # Lints your codes
 go vet ./... # Run static analysis for your codes
+go test -v ./... # Run your unit tests
 ```
 
 ### Run
