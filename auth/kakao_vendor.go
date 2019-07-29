@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/buger/jsonparser"
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -23,8 +22,7 @@ func KakaoOAuthConfig() *oauth2.Config {
 	}
 }
 
-func KakaoOAuthCallback(c *gin.Context) {
-	session := rgSessions.Session(c)
+func KakaoOAuthCallback(ctx *gin.Context) {
 	oauthConfig := KakaoOAuthConfig()
 	userProfileParser := func(result []byte) *UserProfile {
 		id, _ := jsonparser.GetInt(result, "id")
@@ -41,6 +39,6 @@ func KakaoOAuthCallback(c *gin.Context) {
 			Email:        email,
 		}
 	}
-	handler := NewCallbackHandler("kakao", session, oauthConfig, c, userProfileParser)
+	handler := NewCallbackHandler(ctx, VendorKakao, oauthConfig, userProfileParser)
 	handler.Handle()
 }

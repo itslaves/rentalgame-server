@@ -3,7 +3,6 @@ package auth
 import (
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )
@@ -20,8 +19,7 @@ func NaverOAuthConfig() *oauth2.Config {
 	}
 }
 
-func NaverOAuthCallback(c *gin.Context) {
-	session := rgSessions.Session(c)
+func NaverOAuthCallback(ctx *gin.Context) {
 	oauthConfig := NaverOAuthConfig()
 	userProfileParser := func(result []byte) *UserProfile {
 		id, _ := jsonparser.GetString(result, "response", "id")
@@ -43,6 +41,6 @@ func NaverOAuthCallback(c *gin.Context) {
 			Email:        email,
 		}
 	}
-	handler := NewCallbackHandler("naver", session, oauthConfig, c, userProfileParser)
+	handler := NewCallbackHandler(ctx, VendorNaver, oauthConfig, userProfileParser)
 	handler.Handle()
 }

@@ -3,7 +3,6 @@ package auth
 import (
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )
@@ -20,8 +19,7 @@ func GoogleOAuthConfig() *oauth2.Config {
 	}
 }
 
-func GoogleOAuthCallback(c *gin.Context) {
-	session := rgSessions.Session(c)
+func GoogleOAuthCallback(ctx *gin.Context) {
 	oauthConfig := GoogleOAuthConfig()
 	userProfileParser := func(result []byte) *UserProfile {
 		id, _ := jsonparser.GetString(result, "sub")
@@ -37,6 +35,6 @@ func GoogleOAuthCallback(c *gin.Context) {
 			Email:        email,
 		}
 	}
-	handler := NewCallbackHandler("google", session, oauthConfig, c, userProfileParser)
+	handler := NewCallbackHandler(ctx, VendorGoogle, oauthConfig, userProfileParser)
 	handler.Handle()
 }

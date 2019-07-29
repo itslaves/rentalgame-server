@@ -11,12 +11,12 @@ import (
 	"os"
 	"time"
 
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
+
+	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
 )
 
 const (
@@ -30,6 +30,12 @@ const (
 	RefreshToken = "refreshToken"
 	Expiry       = "expiry"
 	State        = "state"
+)
+
+const (
+	VendorKakao  = "kakao"
+	VendorNaver  = "naver"
+	VendorGoogle = "google"
 )
 
 type UserProfile struct {
@@ -64,17 +70,17 @@ func OAuthVendorUrls(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, []map[string]interface{}{
 		gin.H{
-			"vendor": "kakao",
+			"vendor": VendorKakao,
 			"url":    KakaoOAuthConfig().AuthCodeURL(state),
 			"image":  "https://developers.kakao.com/assets/img/about/logos/kakaologin/kr/kakao_account_login_btn_large_narrow.png",
 		},
 		gin.H{
-			"vendor": "naver",
+			"vendor": VendorNaver,
 			"url":    NaverOAuthConfig().AuthCodeURL(state),
 			"image":  "https://static.nid.naver.com/oauth/big_g.PNG",
 		},
 		gin.H{
-			"vendor": "google",
+			"vendor": VendorGoogle,
 			"url":    GoogleOAuthConfig().AuthCodeURL(state),
 			"image":  "https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png?hl=ko",
 		},
@@ -93,21 +99,21 @@ type callbackHandler struct {
 	webAddr           string
 	vendor            string
 	session           *sessions.Session
-	config            *oauth2.Config
+	config            OAuthConfig
 	ctx               *gin.Context
 	userProfileParser UserProfileParser
 	token             *oauth2.Token
 	userProfile       *UserProfile
 }
 
-func NewCallbackHandler(vendor string, session *sessions.Session, config *oauth2.Config, ctx *gin.Context, userProfileParser UserProfileParser) *callbackHandler {
+func NewCallbackHandler(ctx *gin.Context, vendor string, config OAuthConfig, userProfileParser UserProfileParser) *callbackHandler {
 	return &callbackHandler{
-		webAddr:           viper.GetString("web.addr"),
-		vendor:            vendor,
-		session:           session,
-		config:            config,
 		ctx:               ctx,
+		vendor:            vendor,
+		config:            config,
 		userProfileParser: userProfileParser,
+		webAddr:           viper.GetString("web.addr"),
+		session:           rgSessions.Session(ctx),
 		token:             nil,
 		userProfile:       nil,
 	}
