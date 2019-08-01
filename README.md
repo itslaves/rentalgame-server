@@ -35,6 +35,13 @@ go vet ./... # Run static analysis for your codes
 **(NOTE)**
 *RG_ENV* 환경변수를 통해서 서버 환경을 동적으로 선택할 수 있음. (develop|test|staging|production)
 
+### Containerize
+
+```sh
+docker image build -t rg-server:$TAG . # Build a docker image
+docker container run --rm -it -p 8000:8000 -e RG_ENV=$RG_ENV rg-server:$TAG $COMMAND # Run a docker container
+```
+
 ## Usages
 
 ### create
