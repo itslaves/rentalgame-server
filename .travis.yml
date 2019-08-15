@@ -4,7 +4,7 @@ go:
 os:
   - "linux"
   - "osx"
-  - "windows"
+  # - "windows" # FIXME: 윈도우 빌드 속도가 개선될 때 다시 추가
 env:
   - GO111MODULE=on
 before_install:
