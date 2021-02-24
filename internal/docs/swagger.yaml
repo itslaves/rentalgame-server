@@ -1,0 +1,9 @@
+basePath: /v1
+info:
+  contact: {}
+  description: RentalGames API specification
+  termsOfService: http://swagger.io/terms/
+  title: RentalGames Swagger API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

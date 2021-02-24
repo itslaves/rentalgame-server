@@ -3,7 +3,7 @@ package debug
 import (
 	"fmt"
 
-	"github.com/itslaves/rentalgames-server/route"
+	"github.com/skyoo2003/rentalgames-server/internal/route"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	rgRedis "github.com/itslaves/rentalgames-server/common/redis"
+	rgRedis "github.com/skyoo2003/rentalgames-server/internal/third_party/redis"
 	"github.com/spf13/viper"
 
 	"github.com/go-redis/redis"

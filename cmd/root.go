@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itslaves/rentalgames-server/cmd/debug"
+	"github.com/skyoo2003/rentalgames-server/cmd/debug"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

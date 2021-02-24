@@ -5,10 +5,10 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
-	rgErrors "github.com/itslaves/rentalgames-server/common/errors"
-	rgMySQL "github.com/itslaves/rentalgames-server/common/mysql"
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
-	rgUser "github.com/itslaves/rentalgames-server/user"
+	rgErrors "github.com/skyoo2003/rentalgames-server/internal/errors"
+	rgSessions "github.com/skyoo2003/rentalgames-server/internal/sessions"
+	rgMySQL "github.com/skyoo2003/rentalgames-server/internal/third_party/mysql"
+	rgUser "github.com/skyoo2003/rentalgames-server/internal/user"
 )
 
 func Authenticate() gin.HandlerFunc {

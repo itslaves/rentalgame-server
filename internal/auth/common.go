@@ -11,7 +11,7 @@ import (
 	"os"
 	"time"
 
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
+	rgSessions "github.com/skyoo2003/rentalgames-server/internal/sessions"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"

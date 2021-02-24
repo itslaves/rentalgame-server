@@ -7,18 +7,23 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/spf13/viper"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/itslaves/rentalgames-server/auth"
-	"github.com/itslaves/rentalgames-server/common/redis"
-	"github.com/itslaves/rentalgames-server/common/sessions"
+	"github.com/skyoo2003/rentalgames-server/internal/auth"
+	"github.com/skyoo2003/rentalgames-server/internal/sessions"
+	"github.com/skyoo2003/rentalgames-server/internal/third_party/redis"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Route() *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	webAddr := viper.GetString("web.addr")
 	r.Use(cors.New(cors.Config{

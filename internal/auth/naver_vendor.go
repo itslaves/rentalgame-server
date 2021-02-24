@@ -3,7 +3,7 @@ package auth
 import (
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
-	rgSessions "github.com/itslaves/rentalgames-server/common/sessions"
+	rgSessions "github.com/skyoo2003/rentalgames-server/internal/sessions"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )

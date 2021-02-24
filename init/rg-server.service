@@ -1,0 +1,11 @@
+[Unit]
+Description=RentalGames Server Daemon
+After=network.target
+
+[Service]
+WorkingDirectory=/rg-server
+ExecStart=/usr/bin/rg-server 
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

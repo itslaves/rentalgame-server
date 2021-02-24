@@ -1,0 +1,12 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "RentalGames API specification",
+        "title": "RentalGames Swagger API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/v1",
+    "paths": {}
+}
